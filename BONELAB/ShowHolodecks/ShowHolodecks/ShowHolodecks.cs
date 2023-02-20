@@ -1,5 +1,4 @@
-﻿using Il2CppSystem.Collections.Generic;
-using MelonLoader;
+﻿using MelonLoader;
 using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,46 +17,56 @@ namespace ShowHolodecks
     public class ShowHolodecks : MelonMod
     {
 
-        private string targetSceneName = "9845994255863274994b7d033e3bdc76";
-        private string targetRootName = "//-----ENVIRONMENT";
-        private string targetObjectName = "HOLODECKS";
+        private readonly string _targetSceneName = "9845994255863274994b7d033e3bdc76";
+        private readonly string _targetRootName = "//-----ENVIRONMENT";
+        private readonly string _targetObjectName = "HOLODECKS";
 
-        private GameObject holodeckParent = null;
+        private GameObject _holodeckParent = null;
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
-            if (sceneName == targetSceneName)
+            if (sceneName == _targetSceneName)
             {
                 MelonLogger.Msg("BONELAB Hub loaded: Activating HoloDecks");
 
                 ActivateHolodeckParent();
-                DisableSkinnedMeshRenderers(holodeckParent);
+                ModifyChildGameObjects(_holodeckParent);
             }
         }
 
         private void ActivateHolodeckParent()
         {
-            var rootObjects = GetSceneRootObjects(targetSceneName);
+            var rootObjects = GetSceneRootObjects(_targetSceneName);
 
             foreach (var rootObject in rootObjects)
             {
                 rootObject.Cast<GameObject>();
-                if (rootObject.name == targetRootName)
+                if (rootObject.name == _targetRootName)
                 {
-                    holodeckParent = GetObjectInChildren(targetObjectName, rootObject);
+                    _holodeckParent = GetObjectInChildren(_targetObjectName, rootObject);
                     break;
                 }
             }
 
-            holodeckParent.SetActive(true);
+            _holodeckParent.SetActive(true);
         }
 
-        private void DisableSkinnedMeshRenderers(GameObject targetObject)
+        private void ModifyChildGameObjects(GameObject targetObject)
         {
             var renderers = targetObject.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var renderer in renderers)
             {
                 renderer.enabled = false;
+
+                var rendererParentTransform = renderer.transform.parent;
+                if (rendererParentTransform.name == "Holodeck_walls_05")
+                {
+                    rendererParentTransform.localPosition = new Vector3(-25.1f, -3.1f, rendererParentTransform.localPosition.z);
+                }
+                else
+                {
+                    rendererParentTransform.localPosition = new Vector3(rendererParentTransform.localPosition.x, -3.1f, rendererParentTransform.localPosition.z);
+                }
             }
         }
 
