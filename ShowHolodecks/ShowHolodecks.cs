@@ -10,11 +10,11 @@ namespace ShowHolodecks
         public const string Name = "ShowHolodecks"; // Name of the Mod.  (MUST BE SET)
         public const string Author = "yellowyears"; // Author of the Mod.  (Set as null if none)
         public const string Company = null; // Company that made the Mod.  (Set as null if none)
-        public const string Version = "1.0.1"; // Version of the Mod.  (MUST BE SET)
+        public const string Version = "1.0.2"; // Version of the Mod.  (MUST BE SET)
         public const string DownloadLink = "https://bonelab.thunderstore.io/package/yellowyears/ShowHolodecks/"; // Download Link for the Mod.  (Set as null if none)
     }
 
-    public class ShowHolodecks : MelonMod
+    internal class ShowHolodecks : MelonMod
     {
         // Strings used to identify GameObjects and Scenes
         private const string TargetSceneName = "9845994255863274994b7d033e3bdc76";
