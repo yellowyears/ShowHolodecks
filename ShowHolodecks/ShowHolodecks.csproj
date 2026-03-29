@@ -37,6 +37,7 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Holodeck.cs" />
     <Compile Include="ShowHolodecks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
