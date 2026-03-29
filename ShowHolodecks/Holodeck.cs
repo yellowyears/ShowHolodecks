@@ -16,9 +16,7 @@ namespace ShowHolodecks
 
         public List<TweenBlendshape> tweenBlendshapes = new List<TweenBlendshape>();
 
-        public ZoneEvents zoneEvents;
-
-        public void Setup()
+        public void Setup(ZoneEvents zoneEvents)
         {
             UltEvent<MarrowEntity> zoneEnter = zoneEvents.onZoneEnter.Cast<UltEvent<MarrowEntity>>();
             Action<MarrowEntity> activate = (MarrowEntity marrowEntity) =>
@@ -39,7 +37,7 @@ namespace ShowHolodecks
         {
             foreach (var tween in tweenBlendshapes)
             {
-                tween.TweenOn(1f);
+                tween.TweenOn(0.5f);
             }
         }
 
@@ -47,7 +45,7 @@ namespace ShowHolodecks
         {
             foreach (var tween in tweenBlendshapes)
             {
-                tween.TweenOff(1f);
+                tween.TweenOff(0.5f);
             }
         }
     }

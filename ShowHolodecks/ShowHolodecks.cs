@@ -5,10 +5,8 @@ using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Zones;
 using Il2CppSLZ.Utilities;
 using Il2CppSystem.Collections.Generic;
-using Il2CppUltEvents;
 using MelonLoader;
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 namespace ShowHolodecks
@@ -57,11 +55,12 @@ namespace ShowHolodecks
             // Fix each holodeck
             foreach (var childTransform in holodecksParent.transform)
             {
-                Transform child = childTransform.Cast<Transform>();
+                Transform child = childTransform.Cast<Transform>(); // cast because of il2cpp difference
 
                 FixHolodeck(child.gameObject);
             }
-
+            
+            // Finally enable all the holodecks
             holodecksParent.SetActive(true);
         }
 
@@ -79,40 +78,43 @@ namespace ShowHolodecks
                 }
 
                 // Fix any clipping/positioning issues
-                switch (holodeckObj.name)
+                GameObject holowall = holodeckObj.transform.FindChild("holodeck").gameObject;
+                GameObject holofloor = holodeckObj.transform.FindChild("Holofloor").gameObject;
+
+                holofloor.transform.localPosition = new Vector3(0, 0.004f, 0);
+
+                // Fix any clipping/positioning issues
+                if(holodeckObj.name == "Holodeck_walls_05")
                 {
-                    case "Holodeck_walls_03":
-                        break;
-                    case "Holodeck_walls_05":
-                        break;
-                    default:
-                        break;
+                    holodeckObj.transform.localPosition = new Vector3(-25.52f, -3, 3.94f);
                 }
             }
 
+            // Create the Holodeck component which controls activation/deactivation
             Holodeck holodeck = holodeckObj.AddComponent<Holodeck>();
             holodeck.tweenBlendshapes = tweenBlendshapes;
 
-            GenericTrigger trigger = holodeck.GetComponentInChildren<GenericTrigger>();
-
             // Replace trigger with zone
+            GenericTrigger trigger = holodeck.GetComponentInChildren<GenericTrigger>();
             Zone zone = trigger.gameObject.AddComponent<Zone>();
             zone.gameObject.layer = LayerMask.NameToLayer("EntityTrigger");
 
             ZoneEvents zoneEvents = trigger.gameObject.AddComponent<ZoneEvents>();
             zoneEvents._zone = zone;
 
-            // Setup activator tag
+            // Setup activator tag on zone events
             var query = new TagQuery();
             BoneTagReference btRef = new BoneTagReference(MarrowSettings.RuntimeInstance.PlayerTag.Barcode);
             query.BoneTag = btRef;
             zoneEvents.activatorTags.Tags.Add(query);
 
-            // Add listener to zone enter and zone exit
-            holodeck.zoneEvents = zoneEvents;
-            holodeck.Setup();
+            // Remove old trigger
+            GameObject.Destroy(trigger);
 
-            holodeck.Deactivate(); // start deactivated
+            // Add listener to zone enter and zone exit
+            holodeck.Setup(zoneEvents);
+
+            holodeck.Deactivate(); // Start deactivated
         }
         
         // Gets each root GameObject in a scene and return them to an Il2CppReferenceArray of GameObjects
